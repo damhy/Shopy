@@ -1,0 +1,22 @@
+{
+  "name": "shopy",
+  "version": "1.0.0",
+  "description": "mern shopping cart",
+  "main": "server.js",
+  "scripts": {
+    "start": "node backend/server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/damhy/shopy.git"
+  },
+  "author": "Oueslati Ahmed",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/damhy/shopy/issues"
+  },
+  "homepage": "https://github.com/damhy/shopy#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
