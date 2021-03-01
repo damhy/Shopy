@@ -30,8 +30,8 @@ const productSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    categroy: {
-      type: Boolean,
+    category: {
+      type: String,
       required: true,
     },
     description: {
