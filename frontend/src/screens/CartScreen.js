@@ -22,6 +22,8 @@ const CartScreen = ({ match, location, history }) => {
   const dispatch = useDispatch()
 
   const cart = useSelector((state) => state.cart)
+  const userLogin = useSelector((state) => state.userLogin)
+  const { userInfo } = userLogin
   const { cartItems } = cart
   useEffect(() => {
     if (productId) {
@@ -32,7 +34,11 @@ const CartScreen = ({ match, location, history }) => {
     dispatch(removeFromCart(id))
   }
   const checkoutHandler = () => {
-    history.push('/login?redirect=shipping')
+    if (userInfo) {
+      history.push('/shipping')
+    } else {
+      history.push('/login')
+    }
   }
   return (
     <Row>
