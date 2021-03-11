@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { Link } from 'react-router-dom'
 import { PayPalButton } from 'react-paypal-button-v2'
+import { Link } from 'react-router-dom'
 import { Row, Col, ListGroup, Image, Card, Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/message'
@@ -33,11 +33,12 @@ const OrderScreen = ({ match, history }) => {
   const { userInfo } = userLogin
 
   if (!loading) {
+    //   Calculate prices
     const addDecimals = (num) => {
       return (Math.round(num * 100) / 100).toFixed(2)
     }
 
-    order.orderPrice = addDecimals(
+    order.itemsPrice = addDecimals(
       order.orderItems.reduce((acc, item) => acc + item.price * item.qty, 0)
     )
   }
@@ -58,10 +59,10 @@ const OrderScreen = ({ match, history }) => {
       }
       document.body.appendChild(script)
     }
-    if (!order || successPay || successDeliver) {
+
+    if (!order || successPay || successDeliver || order._id !== orderId) {
       dispatch({ type: ORDER_PAY_RESET })
       dispatch({ type: ORDER_DELIVER_RESET })
-
       dispatch(getOrderDetails(orderId))
     } else if (!order.isPaid) {
       if (!window.paypal) {
@@ -70,7 +71,8 @@ const OrderScreen = ({ match, history }) => {
         setSdkReady(true)
       }
     }
-  }, [dispatch, successPay, order, successDeliver, userInfo, history, orderId])
+  }, [dispatch, orderId, successPay, successDeliver, history, userInfo, order])
+
   const successPaymentHandler = (paymentResult) => {
     console.log(paymentResult)
     dispatch(payOrder(orderId, paymentResult))
@@ -79,6 +81,7 @@ const OrderScreen = ({ match, history }) => {
   const deliverHandler = () => {
     dispatch(deliverOrder(order))
   }
+
   return loading ? (
     <Loader />
   ) : error ? (
@@ -95,13 +98,13 @@ const OrderScreen = ({ match, history }) => {
                 <strong>Name: </strong> {order.user.name}
               </p>
               <p>
-                <strong>Email: </strong>
+                <strong>Email: </strong>{' '}
                 <a href={`mailto:${order.user.email}`}>{order.user.email}</a>
               </p>
               <p>
-                <strong>Address: </strong>
-                {order.shippingAddress.address}, {order.shippingAddress.city}
-                {order.shippingAddress.postalCode},
+                <strong>Address:</strong>
+                {order.shippingAddress.address}, {order.shippingAddress.city}{' '}
+                {order.shippingAddress.postalCode},{' '}
                 {order.shippingAddress.country}
               </p>
               {order.isDelivered ? (
@@ -112,6 +115,7 @@ const OrderScreen = ({ match, history }) => {
                 <Message variant='danger'>Not Delivered</Message>
               )}
             </ListGroup.Item>
+
             <ListGroup.Item>
               <h2>Payment Method</h2>
               <p>
@@ -124,6 +128,7 @@ const OrderScreen = ({ match, history }) => {
                 <Message variant='danger'>Not Paid</Message>
               )}
             </ListGroup.Item>
+
             <ListGroup.Item>
               <h2>Order Items</h2>
               {order.orderItems.length === 0 ? (
@@ -166,7 +171,7 @@ const OrderScreen = ({ match, history }) => {
               <ListGroup.Item>
                 <Row>
                   <Col>Items</Col>
-                  <Col>${order.orderPrice}</Col>
+                  <Col>${order.itemsPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>

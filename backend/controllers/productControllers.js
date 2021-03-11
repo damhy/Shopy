@@ -140,6 +140,9 @@ const getTopProducts = asyncHandler(async (req, res) => {
 
   res.json(products)
 })
+// @desc    Create new review
+// @route   POST /api/products/:id/reviews
+// @access  Private
 
 export {
   getProducts,
